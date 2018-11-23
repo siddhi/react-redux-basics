@@ -3,36 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import store from './store';
+import { Provider, connect } from 'react-redux';
 
-class ProfileContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: store.getState().profile.name
-    }
-    this.update = this.update.bind(this);
-  }
-
-  componentWillMount() {
-    this.unsubscribe = store.subscribe(this.update);
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  update() {
-    this.setState({name: store.getState().profile.name});
-  }
-
-  setName(newName) {
-    store.dispatch({type: "NAME_CHANGE", value: newName});
-  }
-
-  render() {
-    return <ProfileEditor name={this.state.name} onNameChanged={this.setName} />
-  }
-}
+let ProfileContainer = connect(
+(state) => ({
+  name: state.profile.name
+}),
+(dispatch) => ({
+  onNameChanged: (newName) => dispatch({type: "NAME_CHANGE", value: newName})
+})
+)(ProfileEditor);
 
 function ProfileEditor(props) {
   return (
@@ -47,35 +27,12 @@ function ClearProfile(props) {
   return <button onClick={() => props.onNameChanged("anjali")}>Reset</button>
 }
 
-class DashboardContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: store.getState().profile.name,
-      notifications: store.getState().notification.notifications
-    };
-    this.update = this.update.bind(this);
-  }
-
-  componentWillMount() {
-    this.unsubscribe = store.subscribe(this.update);
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  update() {
-    this.setState({
-      name: store.getState().profile.name,
-      notifications: store.getState().notification.notifications
-    });
-  }
-
-  render() {
-    return <Dashboard name={this.state.name} notifications={this.state.notifications} />
-  }
-}
+let DashboardContainer = connect(
+(state) => ({
+  name: store.getState().profile.name,
+  notifications: store.getState().notification.notifications
+})
+)(Dashboard);
 
 function Dashboard(props) {
   return (
@@ -120,5 +77,5 @@ class Layout extends React.Component {
   }  
 }
 
-ReactDOM.render(<Layout />, document.getElementById('root'));
+ReactDOM.render(<Provider store={store}><Layout /></Provider>, document.getElementById('root'));
 
