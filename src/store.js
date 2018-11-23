@@ -1,4 +1,4 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 
@@ -39,7 +39,9 @@ let reducer = combineReducers({
 });
 
 let middlewareEnhancer = applyMiddleware(thunk, createLogger());
-let store = createStore(reducer, middlewareEnhancer);
+var reduxDevtoolsEnhancer = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+let enhancers = compose(middlewareEnhancer, reduxDevtoolsEnhancer);
+let store = createStore(reducer, enhancers);
 
 function saveName(newName) {
   return (dispatch) => {
