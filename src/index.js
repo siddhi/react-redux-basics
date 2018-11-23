@@ -1,38 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 class ProfileContainer extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      name: "anjali"
-    }
-    this.setName = this.setName.bind(this);
-  }
-
-  setName(name) {
-    this.setState({name});
-  }
-
   render() {
-    return <Profile name={this.state.name} onNameChanged={this.setName} />
+    return <ProfileEditor name={this.props.name} onNameChanged={this.props.onNameChanged} />
   }
-}
-
-function Profile(props) {
-  return (
-    <div>
-      <Greeting name={props.name} />
-      <ProfileEditor 
-        name={props.name}
-        onNameChanged={props.onNameChanged} />
-    </div>
-  );
-}
-
-function Greeting(props) {
-  return <h1>Hello {props.name}</h1>
 }
 
 function ProfileEditor(props) {
@@ -48,5 +22,43 @@ function ClearProfile(props) {
   return <button onClick={() => props.onNameChanged("anjali")}>Reset</button>
 }
 
-ReactDOM.render(<ProfileContainer />, document.getElementById('root'));
+function Greeting(props) {
+  return <h1>Hello {props.name}</h1>
+}
+
+function Menu() {
+  return (
+    <div>
+      <Link to="/">Profile</Link> | <Link to="/dashboard">Dashboard</Link>
+    </div>
+  );
+}
+
+class Layout extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      name: "anjali"
+    }
+    this.setName = this.setName.bind(this);
+  }
+
+  setName(name) {
+    this.setState({name});
+  }
+
+  render() {
+    return (
+      <Router>
+        <div>
+          <Route path="/" component={ Menu } />
+          <Route exact path="/" render={() => <ProfileContainer name={this.state.name} onNameChanged={this.setName} />} />
+          <Route exact path="/dashboard" render={() => <Greeting name={this.state.name} /> } />
+        </div>
+      </Router>
+    );
+  }  
+}
+
+ReactDOM.render(<Layout />, document.getElementById('root'));
 
