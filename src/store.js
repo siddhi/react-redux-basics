@@ -27,10 +27,4 @@ let reducer = combineReducers({
 
 let store = createStore(reducer);
 
-store.subscribe(() => console.log("store changed", store.getState()));
-
-store.dispatch({type: "NAME_CHANGE", value: "anand"});
-store.dispatch({type: "NEW_NOTIFICATION", value: "Message from sid"});
-store.dispatch({type: "NAME_CHANGE", value: "varsha"});
-
 export default store;
