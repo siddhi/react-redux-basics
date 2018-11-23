@@ -2,17 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Hello() {
-  return (
-    <div>Hello, <World /></div>
-  );
+class Profile extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      name: "anjali"
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello {this.state.name}</h1>
+        <input onChange={(e) => this.setState({name: e.target.value})} value={this.state.name} />
+      </div>
+    );
+  }
 }
 
-function World() {
-  return (
-    <div>World</div>
-  );
-}
-
-ReactDOM.render(<Hello />, document.getElementById('root'));
+ReactDOM.render(<Profile />, document.getElementById('root'));
 
