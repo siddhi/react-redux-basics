@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import './index.css';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import store from './store';
@@ -48,13 +49,22 @@ function Dashboard(props) {
 function NotificationPanel(props) {
   return (
     <ul>
-      { props.notifications.map((notification) => <li>{notification}</li>) }
+      { props.notifications.map((notification, index) => <li key={index}>{notification}</li>) }
     </ul>
   );
 }
 
 function Greeting(props) {
-  return <h1>Hello {props.name}</h1>
+  return <h1>{props.msg} {props.name}</h1>
+}
+
+Greeting.defaultProps = {
+  msg: "Hi"
+}
+
+Greeting.propTypes = {
+  name: PropTypes.string,
+  msg: PropTypes.string
 }
 
 function Menu() {
