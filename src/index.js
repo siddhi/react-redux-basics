@@ -7,7 +7,8 @@ import { Provider, connect } from 'react-redux';
 
 let ProfileContainer = connect(
 (state) => ({
-  name: state.profile.name
+  name: state.profile.name,
+  loading: state.pagestate.loading
 }),
 (dispatch) => ({
   onNameChanged: (newName) => dispatch({type: "NAME_CHANGE", value: newName})
@@ -17,6 +18,7 @@ let ProfileContainer = connect(
 function ProfileEditor(props) {
   return (
     <div>
+      { props.loading ? <h3>Loading...</h3> : "" }
       <input onChange={(e) => props.onNameChanged(e.target.value)} value={props.name} />
       <ClearProfile onNameChanged={props.onNameChanged} />
     </div>
