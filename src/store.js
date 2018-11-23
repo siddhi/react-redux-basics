@@ -1,4 +1,5 @@
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createLogger } from 'redux-logger';
 
 function profileReducer(state={name: "sid"}, action) {
   if (action.type === "NAME_CHANGE") {
@@ -25,6 +26,7 @@ let reducer = combineReducers({
   notification: notificationReducer
 });
 
-let store = createStore(reducer);
+let middlewareEnhancer = applyMiddleware(createLogger());
+let store = createStore(reducer, middlewareEnhancer);
 
 export default store;
