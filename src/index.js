@@ -2,24 +2,33 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Profile extends React.Component {
+class ProfileContainer extends React.Component {
   constructor() {
     super();
     this.state = {
       name: "anjali"
     }
+    this.setName = this.setName.bind(this);
+  }
+
+  setName(name) {
+    this.setState({name});
   }
 
   render() {
-    return (
-      <div>
-        <Greeting name={this.state.name} />
-        <ProfileEditor 
-          name={this.state.name}
-          onNameChanged={(newName) => this.setState({name: newName})} />
-      </div>
-    );
+    return <Profile name={this.state.name} onNameChanged={this.setName} />
   }
+}
+
+function Profile(props) {
+  return (
+    <div>
+      <Greeting name={props.name} />
+      <ProfileEditor 
+        name={props.name}
+        onNameChanged={props.onNameChanged} />
+    </div>
+  );
 }
 
 function Greeting(props) {
@@ -39,5 +48,5 @@ function ClearProfile(props) {
   return <button onClick={() => props.onNameChanged("anjali")}>Reset</button>
 }
 
-ReactDOM.render(<Profile />, document.getElementById('root'));
+ReactDOM.render(<ProfileContainer />, document.getElementById('root'));
 
