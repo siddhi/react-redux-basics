@@ -4,7 +4,13 @@ import './index.css';
 
 function Hello() {
   return (
-    <div>Hello, world!</div>
+    <div>Hello, <World /></div>
+  );
+}
+
+function World() {
+  return (
+    <div>World</div>
   );
 }
 
