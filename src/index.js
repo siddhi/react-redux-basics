@@ -12,7 +12,8 @@ let ProfileContainer = connect(
   loading: state.pagestate.loading
 }),
 (dispatch) => ({
-  onNameChanged: (newName) => dispatch({type: "NAME_CHANGE", value: newName})
+  onNameChanged: (newName) => dispatch({type: "NAME_CHANGE", value: newName}),
+  onUndo: () => dispatch({type: "UNDO"})
 })
 )(ProfileEditor);
 
@@ -21,6 +22,7 @@ function ProfileEditor(props) {
     <div>
       { props.loading ? <h3>Loading...</h3> : "" }
       <input onChange={(e) => props.onNameChanged(e.target.value)} value={props.name} />
+      <button onClick={() => props.onUndo()}>Undo</button>
       <ClearProfile onNameChanged={props.onNameChanged} />
     </div>
   );
