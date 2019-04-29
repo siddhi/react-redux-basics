@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import './index.css';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import store from './store';
 import { Provider, connect } from 'react-redux';
+
+let ThemeContext = React.createContext({background: "green", color:"white"})
 
 function useLoading() {
   let [isLoading, setLoading] = useState(store.getState().pagestate.loading);
@@ -59,8 +61,10 @@ function Dashboard(props) {
 }
 
 function Message(props) {
+  let theme = useContext(ThemeContext);
+
   return (
-    <div style={{backgroundColor: "green", color:" white", padding: "10px"}}>
+    <div style={{ ...theme, padding: "10px" }}>
       {props.children}
     </div>
   );
@@ -98,6 +102,7 @@ function Menu() {
 class Layout extends React.Component {
   render() {
     return (
+      <ThemeContext.Provider value={{background: "red", color: "white"}}>
       <Router>
         <div>
           <Route path="/" component={ Menu } />
@@ -105,6 +110,7 @@ class Layout extends React.Component {
           <Route exact path="/dashboard" component={ DashboardContainer } />
         </div>
       </Router>
+      </ThemeContext.Provider>
     );
   }  
 }
