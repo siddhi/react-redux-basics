@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import './index.css';
@@ -6,23 +6,22 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import store from './store';
 import { Provider, connect } from 'react-redux';
 
-let ProfileContainer = connect(
-(state) => ({
-  name: state.profile.name,
-  loading: state.pagestate.loading
-}),
-(dispatch) => ({
-  onNameChanged: (newName) => dispatch({type: "NAME_CHANGE", value: newName}),
-  onUndo: () => dispatch({type: "UNDO"})
-})
-)(ProfileEditor);
-
 function ProfileEditor(props) {
+  let [name, setName] = useState(store.getState().profile.name);
+  let [loading, setLoading] = useState(store.getState().pagestate.loading);
+
+  useEffect(() => {
+    return store.subscribe(() => {
+      setName(store.getState().profile.name);
+      setLoading(store.getState().pagestate.loading);
+    });
+  });
+
   return (
     <div>
-      { props.loading ? <h3>Loading...</h3> : "" }
-      <input onChange={(e) => props.onNameChanged(e.target.value)} value={props.name} />
-      <button onClick={() => props.onUndo()}>Undo</button>
+      { loading ? <h3>Loading...</h3> : "" }
+      <input onChange={(e) => store.dispatch({type: "NAME_CHANGE", value: e.target.value})} value={name} />
+      <button onClick={() => store.dispatch({type: "UNDO"})}>Undo</button>
       <ClearProfile onNameChanged={props.onNameChanged} />
     </div>
   );
@@ -94,7 +93,7 @@ class Layout extends React.Component {
       <Router>
         <div>
           <Route path="/" component={ Menu } />
-          <Route exact path="/" component={ ProfileContainer } />
+          <Route exact path="/" component={ ProfileEditor } />
           <Route exact path="/dashboard" component={ DashboardContainer } />
         </div>
       </Router>
