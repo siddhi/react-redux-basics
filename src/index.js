@@ -43,7 +43,18 @@ function Dashboard(props) {
   return (
     <div>
       <Greeting name={props.name} />
+      <Message>
+        You have <strong>{props.notifications.length}</strong> notifications
+      </Message>
       <NotificationPanel notifications={props.notifications} />
+    </div>
+  );
+}
+
+function Message(props) {
+  return (
+    <div style={{backgroundColor: "green", color:" white", padding: "10px"}}>
+      {props.children}
     </div>
   );
 }
