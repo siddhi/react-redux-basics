@@ -6,20 +6,28 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import store from './store';
 import { Provider, connect } from 'react-redux';
 
+function useLoading() {
+  let [isLoading, setLoading] = useState(store.getState().pagestate.loading);
+  useEffect(() => store.subscribe(() => {
+    setLoading(store.getState().pagestate.loading);
+  }));
+
+  return isLoading;
+}
+
 function ProfileEditor(props) {
   let [name, setName] = useState(store.getState().profile.name);
-  let [loading, setLoading] = useState(store.getState().pagestate.loading);
+  let isLoading = useLoading();
 
   useEffect(() => {
     return store.subscribe(() => {
       setName(store.getState().profile.name);
-      setLoading(store.getState().pagestate.loading);
     });
   });
 
   return (
     <div>
-      { loading ? <h3>Loading...</h3> : "" }
+      { isLoading ? <h3>Loading...</h3> : "" }
       <input onChange={(e) => store.dispatch({type: "NAME_CHANGE", value: e.target.value})} value={name} />
       <button onClick={() => store.dispatch({type: "UNDO"})}>Undo</button>
       <ClearProfile onNameChanged={props.onNameChanged} />
