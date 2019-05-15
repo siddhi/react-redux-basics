@@ -1,12 +1,31 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
 import './index.css';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import store from './store';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
+import { ThemeContext } from './contexts';
 
-let ThemeContext = React.createContext({background: "green", color:"white"})
+let Dashboard = React.lazy(() => import('./dashboard'));
+
+class LoadError extends React.Component {
+  constructor() {
+    super();
+    this.state = { error: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error: true };
+  }
+
+  render() {
+    return (
+      <div>
+        { this.state.error ? "Error loading page. Please reload" : this.props.children }
+      </div>
+    );
+  }
+}
 
 function useLoading() {
   let [isLoading, setLoading] = useState(store.getState().pagestate.loading);
@@ -32,63 +51,13 @@ function ProfileEditor(props) {
       { isLoading ? <h3>Loading...</h3> : "" }
       <input onChange={(e) => store.dispatch({type: "NAME_CHANGE", value: e.target.value})} value={name} />
       <button onClick={() => store.dispatch({type: "UNDO"})}>Undo</button>
-      <ClearProfile onNameChanged={props.onNameChanged} />
+      <ClearProfile onNameChanged={(newName) => store.dispatch({type: "NAME_CHANGE", value: newName})} />
     </div>
   );
 }
 
 function ClearProfile(props) {
   return <button onClick={() => props.onNameChanged("anjali")}>Reset</button>
-}
-
-let DashboardContainer = connect(
-(state) => ({
-  name: store.getState().profile.name,
-  notifications: store.getState().notification.notifications
-})
-)(Dashboard);
-
-function Dashboard(props) {
-  return (
-    <div>
-      <Greeting name={props.name} />
-      <Message>
-        You have <strong>{props.notifications.length}</strong> notifications
-      </Message>
-      <NotificationPanel notifications={props.notifications} />
-    </div>
-  );
-}
-
-function Message(props) {
-  let theme = useContext(ThemeContext);
-
-  return (
-    <div style={{ ...theme, padding: "10px" }}>
-      {props.children}
-    </div>
-  );
-}
-
-function NotificationPanel(props) {
-  return (
-    <ul>
-      { props.notifications.map((notification, index) => <li key={index}>{notification}</li>) }
-    </ul>
-  );
-}
-
-function Greeting(props) {
-  return <h1>{props.msg} {props.name}</h1>
-}
-
-Greeting.defaultProps = {
-  msg: "Hi"
-}
-
-Greeting.propTypes = {
-  name: PropTypes.string,
-  msg: PropTypes.string
 }
 
 function Menu() {
@@ -104,11 +73,13 @@ class Layout extends React.Component {
     return (
       <ThemeContext.Provider value={{background: "red", color: "white"}}>
       <Router>
-        <div>
+        <LoadError>
           <Route path="/" component={ Menu } />
           <Route exact path="/" component={ ProfileEditor } />
-          <Route exact path="/dashboard" component={ DashboardContainer } />
-        </div>
+          <React.Suspense fallback={<div>Loading page...</div>}>
+            <Route exact path="/dashboard" component={ Dashboard } />
+          </React.Suspense>
+        </LoadError>
       </Router>
       </ThemeContext.Provider>
     );
